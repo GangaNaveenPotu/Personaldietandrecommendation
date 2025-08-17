@@ -13,7 +13,16 @@ dotenv.config(); // load .env variables
 
 const app = express();
 app.use(express.json());
-app.use(cors());
+
+// Configure CORS for separate deployment
+app.use(cors({
+  origin: [
+    'http://localhost:3000', // Local development
+    'https://your-frontend.vercel.app', // Replace with your actual frontend URL
+    'https://your-frontend.netlify.app'  // Replace with your actual frontend URL
+  ],
+  credentials: true
+}));
 
 // Routes
 app.use("/api", authRoutes);

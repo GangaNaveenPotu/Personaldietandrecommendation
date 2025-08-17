@@ -1,9 +1,16 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from transformers import pipeline
+import os
 
 app = Flask(__name__)
-CORS(app)  # Allow requests from frontend (React, etc.)
+
+# Configure CORS for separate deployment
+CORS(app, origins=[
+    "http://localhost:3000",  # Local development
+    "https://your-frontend.vercel.app",  # Replace with your actual frontend URL
+    "https://your-frontend.netlify.app"   # Replace with your actual frontend URL
+])
 
 # Load Q&A pipeline
 qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
