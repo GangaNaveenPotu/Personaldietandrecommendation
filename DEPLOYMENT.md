@@ -76,16 +76,16 @@ This app consists of three separate services that need to be deployed independen
      ```
    - Deploy: `git push heroku main`
 
-## 3. ML Service Deployment (Railway/Heroku)
+## 3. ML Service Deployment (Railway/Heroku/Render)
 
 ### Prerequisites
-- Python 3.8+ installed
+- Python 3.8+ installed (recommended: Python 3.11)
 - Git repository
 
 ### Steps
 1. **Deploy to Railway:**
    - Connect GitHub repo
-   - Set Python runtime
+   - Set Python runtime to 3.11
    - Set environment variables:
      ```
      PORT=5001
@@ -95,6 +95,12 @@ This app consists of three separate services that need to be deployed independen
    - Create app: `heroku create your-ml-app-name`
    - Set buildpack: `heroku buildpacks:set heroku/python`
    - Deploy: `git push heroku main`
+
+3. **Deploy to Render:**
+   - Connect GitHub repo
+   - Set Python version to 3.11
+   - Use `requirements.txt` for full ML features
+   - Or use `requirements-light.txt` for basic functionality without ML models
 
 ## 4. Update Frontend URLs
 
@@ -153,6 +159,7 @@ PORT=5001
 2. **Database connection:** Check MongoDB Atlas network access
 3. **Build failures:** Check Node.js/Python versions
 4. **Environment variables:** Ensure all required vars are set
+5. **PyTorch compatibility:** Use Python 3.11 for ML service, or use `requirements-light.txt` for basic deployment
 
 ### Health Checks:
 - Backend: `GET /api/profile`

@@ -1,7 +1,16 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-from transformers import pipeline
 import os
+
+# Handle potential import issues with newer versions
+try:
+    from transformers import pipeline
+    qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
+    ML_AVAILABLE = True
+except ImportError as e:
+    print(f"Warning: ML pipeline not available: {e}")
+    ML_AVAILABLE = False
+    qa_pipeline = None
 
 app = Flask(__name__)
 
@@ -12,8 +21,7 @@ CORS(app, origins=[
     "https://your-frontend.netlify.app"   # Replace with your actual frontend URL
 ])
 
-# Load Q&A pipeline
-qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
+# Q&A pipeline is loaded in the try-except block above
 
 # Basic nutrition knowledge base
 nutrition_data = """
@@ -83,13 +91,18 @@ def chat():
                 "error": str(e),
             })
 
-    # Otherwise use Q&A model
-    answer = qa_pipeline({
-        "context": nutrition_data,
-        "question": question
-    })["answer"]
-
-    return jsonify({"reply": answer})
+    # Otherwise use Q&A model if available
+    if ML_AVAILABLE and qa_pipeline:
+        try:
+            answer = qa_pipeline({
+                "context": nutrition_data,
+                "question": question
+            })["answer"]
+            return jsonify({"reply": answer})
+        except Exception as e:
+            return jsonify({"reply": "I'm having trouble processing your question right now. Please try again later.", "error": str(e)})
+    else:
+        return jsonify({"reply": "I'm currently learning and will be back with better answers soon!"})
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5001)
